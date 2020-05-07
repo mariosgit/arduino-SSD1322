@@ -67,8 +67,8 @@ All text above, and the splash screen must be included in any redistribution
     SSD1322_256_64_1  256x64 pixel display 2 color (1 bits per pixel) 2k
 
     -----------------------------------------------------------------------*/
-//   #define SSD1322_256_64_4
-   #define SSD1322_256_64_1
+  #define SSD1322_256_64_4
+  //  #define SSD1322_256_64_1
 /*=========================================================================*/
 
 #if defined SSD1322_256_64_4

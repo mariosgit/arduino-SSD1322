@@ -26,10 +26,10 @@ BSD license, check license.txt for more information
 All text above, and the splash screen must be included in any redistribution
 *********************************************************************/
 
-#ifndef ESP8266    					//Added for compatibility with ESP8266 board
+#if !defined(ESP32q) && !defined(ESP8266)     					//Added for compatibility with ESP8266 board
 #include <avr/pgmspace.h>
 #endif
-#if !defined(__SAM3X8E__) &&  !defined(ESP8266) && !defined(ARDUINO_ARCH_ARC32)
+#if !defined(__SAM3X8E__) &&  !defined(ESP8266) &&  !defined(ESP32) && !defined(ARDUINO_ARCH_ARC32)
 #include <util/delay.h>
 #endif
 #include <stdlib.h>
@@ -331,13 +331,13 @@ void ESP8266_SSD1322::dim(boolean dim) {
 	if (dim) {
 		contrast = 0; // Dimmed display
 	}
-//	else {
-//		if (_vccstate == SSD1322_EXTERNALVCC) {
-//			contrast = 0x9F;
-//		} else {
-//			contrast = 0xCF;
-//		}
-//	}
+	// else {
+	// 	if (_vccstate == SSD1322_EXTERNALVCC) {
+	// 		contrast = 0x9F;
+	// 	} else {
+	// 		contrast = 0xCF;
+	// 	}
+	// }
 	// the range of contrast to too small to be really useful
 	// it is useful to dim the display
 	ssd1322_command(SSD1322_SETCONTRASTCURRENT);
@@ -876,7 +876,7 @@ void ESP8266_SSD1322::fastDrawBitmap(int16_t x, int16_t y, const uint8_t *bitmap
   // Divide by 8, as 8 pixels per byte (1 bit per pixel) unless this not, then need to add 1 extra byte
   register uint8_t wInBytes = ((w % 8) > 0) ? wDiv8 + 1 : wDiv8;
   register uint8_t wStartByte = (xDiv8 < 0 ? abs(xDiv8) : 0);
-  register uint16_t hInRows = min(SSD1322_LCDHEIGHT - y, h);
+  register uint16_t hInRows = min(int16_t(SSD1322_LCDHEIGHT - y), h);
   register uint16_t bytePos = 0;
   pBuf += wStartByte;  // Move start of buffer up if X < 0
 //    wInBytes -= wStartByte;
@@ -1220,13 +1220,13 @@ int ESP8266_SSD1322::drawUnicode(unsigned int uniCode, int x, int y, int size)
 	{
 	  if (textcolor != textbgcolor)
 	  {
-		if (textsize == 1)
+		if (_textsize_x == 1 && _textsize_y == 1)
 		{
 			drawFastHLine(x, pY, width+gap, textbgcolor);
 		}
 		else
 		{
-			fillRect(x, pY, (width+gap)*textsize, textsize, textbgcolor);
+			fillRect(x, pY, (width+gap) * _textsize_x, _textsize_y, textbgcolor);
 		}
 	  }
 	  for (register int k = 0;k < w; k++)
